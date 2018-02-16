@@ -1,4 +1,4 @@
-(ns dev.user
+(ns user
   (:require [clojure.pprint :refer (pprint)]
             [datomic.api :as d]))
 
