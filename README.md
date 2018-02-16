@@ -20,14 +20,14 @@ the top level directory of this project (same dir as this README
 file).  Register at datomic.com for a license for Datomic Pro Starter
 Edition. Edit the `.credentials` to add the user and datomic download
 key (see
-<https://my.datomic.com/account|https://my.datomic.com/account>) in
+[https://my.datomic.com/account](https://my.datomic.com/account)) in
 the format `user:download-key`.
 
 Copy the `config/sample-dev-transactor.properties` file to
 `config/dev-transactor.properties`. Edit the
 `config/dev-transactor.properties` file to add the license key for
 your registered datomic pro license (see
-<https://my.datomic.com/account|https://my.datomic.com/account>) in
+[https://my.datomic.com/account](https://my.datomic.com/account)) in
 the `license-key=` value.
 
 Download the subset of the mbrainz database covering the period 1968 to
