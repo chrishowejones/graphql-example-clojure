@@ -1,0 +1,107 @@
+{:objects
+ {:Artist
+  {:description "Music artist(s)."
+   :fields
+   {:id {:type ID
+         :description "Id of the artist."
+         :resolve [:key :db/id]}
+    :name {:type (non-null String)
+           :description "Name of the artist."
+           :resolve [:key :artist/name]}
+    :startYear {:type Int
+                :description "Year the artist started."
+                :resolve [:key :artist/startYear]}
+    :startMonth {:type Int
+                 :description "Month the artist started."
+                 :resolve [:key :artist/startMonth]}
+    :startDay {:type Int
+               :description "Day the artist started."
+               :resolve [:key :artist/startDay]}
+    :endYear {:type Int
+              :description "Year the artist ended."
+              :resolve [:key :artist/endYear]}
+    :endMonth {:type Int
+               :description "Month the artist ended."
+               :resolve [:key :artist/endMonth]}
+    :endDay {:type Int
+             :description "Day the artist ended."
+             :resolve [:key :artist/endDay]}
+    :country {:type :Country
+              :description "Country of artist"
+              :resolve [:entity :artist/country]}
+    :tracks {:type (list :Track)
+             :description "Music tracks for artist."
+             :resolve :Artist/tracks}}}
+  :Country
+  {:description "Country"
+   :fields
+   {:name {:type (non-null String)
+           :description "Name of country."
+           :resolve [:key :country/name]}}}
+
+  :Track
+  {:description "Music Track."
+   :fields
+   {:name {:type (non-null String)
+           :description "Name of music track."
+           :resolve [:key :track/name]}
+    :artistCredit {:type String
+                   :description "Artist(s) credited on track."
+                   :resolve [:key :track/artistCredit]}
+    :position {:type Int
+               :description "Track position."
+               :resolve [:key :track/position]}
+    :duration {:type Int
+               :description "Duration in ms."
+               :resolve [:key :track/duration]}
+    }}
+
+  :Release
+  {:description "Music release"
+   :fields
+   {:id {:type ID
+         :description "Release id"
+         :resolve [:key :db/id]}
+    :name {:type String
+           :description "Release name"
+           :resolve [:key :release/name]}
+    :status {:type String
+             :description "Release status e.g. Official, Promotion, etc."}
+    :artistCredit {:type String
+                   :description "Release artist credit."
+                   :resolve [:key :release/artistCredit]}
+    :artists {:type (list :Artist)
+              :description "Release artists."
+              :resolve :Release/artists}
+    :year {:type Int
+           :description "Year of release."
+           :resolve [:key :release/year]}
+    :month {:type Int
+            :description "Month of release."
+            :resolve [:key :release/month]}
+    :day {:type Int
+          :description "Day of release."
+          :resolve [:key :release/day]}
+    }}}
+
+ :queries
+ {:artist_by_name
+  {:type :Artist
+   :description "Access an Artist by their name, if it exists."
+   :args
+   {:name {:type (non-null String)}}
+   :resolve :query/artist-by-name}
+
+  :tracks_by_name
+  {:type (list :Track)
+   :description "List of tracks by name, if they exist."
+   :args
+   {:name {:type (non-null String)}}
+   :resolve :query/tracks-by-name}
+
+  :release_by_name
+  {:type :Release
+   :description "Access a Release by it's name, it it exists."
+   :args
+   {:name {:type (non-null String)}}
+   :resolve :query/release-by-name}}}
