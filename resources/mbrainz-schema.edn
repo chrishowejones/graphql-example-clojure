@@ -54,6 +54,9 @@
     :duration {:type Int
                :description "Duration in ms."
                :resolve [:key :track/duration]}
+    :artists {:type (list :Artist)
+              :description "Artists for a track"
+              :resolve :Track/artists}
     }}
 
   :Release
@@ -82,7 +85,29 @@
     :day {:type Int
           :description "Day of release."
           :resolve [:key :release/day]}
-    }}}
+    :media {:type (list :Medium)
+            :description "List of media for this Release."
+            :resolve [:key :release/media]}
+    }}
+
+  :Medium
+  {:description "Release medium."
+   :fields
+   {:id {:type ID
+         :description "Release medium id"
+         :resolve [:key :db/id]}
+    :position {:type Int
+              :description "Medium position in Release."
+              :resolve [:key :medium/position]}
+    :trackCount {:type Int
+                 :description "Count of tracks on release medium."
+                 :resolve [:key :medium/trackCount]}
+    :tracks {:type (list :Track)
+             :description "List of tracks for a release medium."
+             :resolve :Medium/tracks}
+}}
+  }
+
 
  :queries
  {:artist_by_name

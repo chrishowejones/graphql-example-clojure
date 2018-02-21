@@ -32,26 +32,39 @@
     (let [{:keys [name]} args]
       (db/release-by-name name))))
 
-(defn track-by-artist
+(defn tracks-by-artist
   []
   (fn [_ _ artist]
     (let [artist-id (:db/id artist)]
       (flatten (db/tracks-by-artist artist-id)))))
 
+(defn tracks-by-medium
+  []
+  (fn [_ _ medium]
+    (let [medium-id (:db/id medium)]
+      (flatten (db/tracks-by-medium medium-id)))))
+
 (defn artists-by-release
   []
   (fn [_ _ release]
     (let [release-id (:db/id release)]
-      (println "Release id = " release-id)
       (db/artists-by-release release-id))))
+
+(defn artists-for-track
+  []
+  (fn [_ _ track]
+    (let [track-id (:db/id track)]
+      (db/artists-for-track track-id))))
 
 (defn resolver-map
   [component]
   {:query/artist-by-name (artist-by-name)
    :query/tracks-by-name (tracks-by-name)
    :query/release-by-name (release-by-name)
-   :Artist/tracks (track-by-artist)
+   :Artist/tracks (tracks-by-artist)
+   :Track/artists (artists-for-track)
    :Release/artists (artists-by-release)
+   :Medium/tracks (tracks-by-medium)
    :key key-factory
    :entity entity-factory})
 
@@ -74,3 +87,17 @@
   []
   {:schema-provider (component/using (map->SchemaProvider {})
                                      [:schema])})
+
+(comment
+
+  (def track1 {:db/id 967570232551699,
+               :track/artists [{:db/id 686095255742708}],
+               :track/artistCredit "The Rolling Stones",
+               :track/position 3,
+               :track/name "Play With Fire",
+               :track/duration 131933})
+
+  ((artists-for-track) nil nil track1)
+
+
+  )
