@@ -42,7 +42,10 @@
   :Track
   {:description "Music Track."
    :fields
-   {:name {:type (non-null String)
+   {:id {:type ID
+         :description "Track id."
+         :resolve [:key :db/id]}
+    :name {:type (non-null String)
            :description "Name of music track."
            :resolve [:key :track/name]}
     :artistCredit {:type String
@@ -56,8 +59,7 @@
                :resolve [:key :track/duration]}
     :artists {:type (list :Artist)
               :description "Artists for a track"
-              :resolve :Track/artists}
-    }}
+              :resolve :Track/artists}}}
 
   :Release
   {:description "Music release"
@@ -105,7 +107,20 @@
     :tracks {:type (list :Track)
              :description "List of tracks for a release medium."
              :resolve :Medium/tracks}
-}}
+    :format {:type :Format
+             :description "Format of release medium"
+             :resolve [:entity :medium/format]}}}
+
+  :Format
+  {:description "Format of medium"
+   :fields
+   {:id {:type ID
+         :description "Format id."
+         :resolve [:key :db/id]}
+    :format {:type String
+             :description "Format of medium."
+             :resolve :Format/format}}}
+
   }
 
 

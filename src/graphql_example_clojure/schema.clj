@@ -56,6 +56,11 @@
     (let [track-id (:db/id track)]
       (db/artists-for-track track-id))))
 
+(defn resolve-format
+  []
+  (fn [_ _ format]
+    (db/format (:db/id format))))
+
 (defn resolver-map
   [component]
   {:query/artist-by-name (artist-by-name)
@@ -65,6 +70,7 @@
    :Track/artists (artists-for-track)
    :Release/artists (artists-by-release)
    :Medium/tracks (tracks-by-medium)
+   :Format/format (resolve-format)
    :key key-factory
    :entity entity-factory})
 

@@ -76,12 +76,26 @@
   (:track/artists
    (d/pull (db) '[{:track/artists [*]}] track-id )))
 
+(defn format
+  [format-id]
+  (-> (d/q '[:find ?f .
+             :in $ ?format-id
+             :where
+             [?format-id :db/ident ?f]]
+           (db)
+           format-id)
+      name))
+
 (comment
 
-  (-> (release-by-name "Hot Rocks 1964-1971")
-      :release/media
-      first
-      :medium/format)
+  967570232551699
+
+  (format (-> (release-by-name "Hot Rocks 1964-1971")
+                          :release/media
+                          first
+                          :medium/format
+                          :db/id))
+
 
   (def track1 {:db/id 967570232551699,
                :track/artists [{:db/id 686095255742708}],
