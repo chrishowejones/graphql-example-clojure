@@ -73,7 +73,8 @@
 
 (defn artists-for-track
   [track-id]
-  (d/pull (db) '[{:track/artists [*]}] track-id ))
+  (:track/artists
+   (d/pull (db) '[{:track/artists [*]}] track-id )))
 
 (comment
 
