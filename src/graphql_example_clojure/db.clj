@@ -4,26 +4,22 @@
 
 (def uri "datomic:dev://localhost:4334/mbrainz-1968-1973")
 
-(defn conn [] (d/connect uri))
-
-(defn db [] (d/db (conn)))
-
 (defn artist-by-name
-  [name]
+  [db name]
   (d/q '[:find  (pull ?a [*]) .
          :in $ ?artist-name
          :where
          [?a :artist/name ?artist-name]]
-       (db)
+       db
        name))
 
 (defn tracks-by-name
-  [name]
+  [db name]
   (d/q '[:find  [(pull ?t [*]) ...]
          :in $ ?track-name
          :where
          [?t :track/name ?track-name]]
-       (db)
+       db
        name))
 
 (defn release-by-name
@@ -36,54 +32,54 @@
        name))
 
 (defn releases-by-artist-name
-  [artist-name]
+  [db artist-name]
   (d/q '[:find [(pull ?r [*]) ...]
          :in $ ?artist-name
          :where
          [?a :artist/name ?artist-name]
          [?r :release/artists ?a]]
-       (db)
+       db
        artist-name))
 
 (defn entity-by-id
-  [id]
-  (d/pull (db) '[*] (:db/id id)))
+  [db id]
+  (d/pull db '[*] (:db/id id)))
 
 (defn tracks-by-artist
-  [artist-id]
+  [db artist-id]
   (d/q '[:find (pull ?t [*])
          :in $ ?artist-id
          :where
          [?t :track/artists ?artist-id]]
-       (db)
+       db
        artist-id))
 
 (defn tracks-by-medium
-  [medium-id]
+  [db medium-id]
   (d/q '[:find (pull ?t [*])
          :in $ ?medium-id
          :where
          [?medium-id :medium/tracks ?t]]
-       (db)
+       db
        medium-id))
 
 (defn artists-by-release
-  [release-id]
+  [db release-id]
   (:release/artists
-   (d/pull (db) '[{:release/artists [*]}] release-id)))
+   (d/pull db '[{:release/artists [*]}] release-id)))
 
 (defn artists-for-track
-  [track-id]
+  [db track-id]
   (:track/artists
-   (d/pull (db) '[{:track/artists [*]}] track-id )))
+   (d/pull db '[{:track/artists [*]}] track-id )))
 
 (defn release-format
-  [format-id]
+  [db format-id]
   (-> (d/q '[:find ?f .
              :in $ ?format-id
              :where
              [?format-id :db/ident ?f]]
-           (db)
+           db
            format-id)
       name))
 
