@@ -9,8 +9,7 @@
 (defn load-schema-file
   []
   (with-open [rdr (io/reader (io/resource "mbrainz-schema.edn"))]
-    (edn/read-string (slurp rdr)))
-  )
+    (edn/read-string (slurp rdr))))
 
 (defn new-system
   []

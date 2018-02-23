@@ -59,7 +59,7 @@
 (defn resolve-format
   []
   (fn [_ _ format]
-    (db/format (:db/id format))))
+    (db/release-format (:db/id format))))
 
 (defn resolver-map
   [component]

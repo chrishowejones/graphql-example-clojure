@@ -76,7 +76,7 @@
   (:track/artists
    (d/pull (db) '[{:track/artists [*]}] track-id )))
 
-(defn format
+(defn release-format
   [format-id]
   (-> (d/q '[:find ?f .
              :in $ ?format-id
