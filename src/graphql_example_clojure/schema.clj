@@ -2,7 +2,8 @@
   (:require [com.stuartsierra.component :as component]
             [com.walmartlabs.lacinia.schema :as schema]
             [com.walmartlabs.lacinia.util :as util]
-            [graphql-example-clojure.db :as db]))
+            [graphql-example-clojure.db :as db]
+            [datomic.api :as d]))
 
 (defn key-factory
   [key]
@@ -27,10 +28,12 @@
       (db/tracks-by-name name))))
 
 (defn release-by-name
-  []
+  [db-conn]
+  {:pre [db-conn]}
   (fn [_ args _]
-    (let [{:keys [name]} args]
-      (db/release-by-name name))))
+    (let [{:keys [name]} args
+          db (d/db db-conn)]
+      (db/release-by-name db name))))
 
 (defn tracks-by-artist
   []
@@ -65,7 +68,9 @@
   [component]
   {:query/artist-by-name (artist-by-name)
    :query/tracks-by-name (tracks-by-name)
-   :query/release-by-name (release-by-name)
+   :query/release-by-name (release-by-name (-> component
+                                               :db
+                                               :db-conn))
    :Artist/tracks (tracks-by-artist)
    :Track/artists (artists-for-track)
    :Release/artists (artists-by-release)
@@ -92,7 +97,7 @@
 (defn new-schema-provider
   []
   {:schema-provider (component/using (map->SchemaProvider {})
-                                     [:schema])})
+                                     [:schema :db])})
 
 (comment
 

@@ -1,5 +1,6 @@
 (ns graphql-example-clojure.db
-  (:require [datomic.api :as d]))
+  (:require [datomic.api :as d]
+            [com.stuartsierra.component :as component]))
 
 (def uri "datomic:dev://localhost:4334/mbrainz-1968-1973")
 
@@ -26,12 +27,12 @@
        name))
 
 (defn release-by-name
-  [name]
+  [db name]
   (d/q '[:find  (pull ?r [*]) .
          :in $ ?release-name
          :where
          [?r :release/name ?release-name]]
-       (db)
+       db
        name))
 
 (defn releases-by-artist-name
@@ -86,15 +87,32 @@
            format-id)
       name))
 
+(defrecord Database
+    [db-uri]
+  component/Lifecycle
+  (start [this]
+    (when db-uri
+      (assoc this :db-conn (d/connect db-uri))))
+  (stop [this]
+    (when-let [conn (:db-conn this)]
+      (d/release conn))
+    (assoc this :db-conn nil)))
+
+(defn new-database []
+  {:db (component/using (map->Database {})
+                        [:db-uri])})
+
 (comment
 
-  967570232551699
+  (release-by-name "Hot Rocks 1964-1971")
 
   (format (-> (release-by-name "Hot Rocks 1964-1971")
-                          :release/media
-                          first
-                          :medium/format
-                          :db/id))
+              first
+              ;; :release/media
+              ;; first
+              ;; :medium/format
+              ;; :db/id
+              ))
 
 
   (def track1 {:db/id 967570232551699,
@@ -128,7 +146,7 @@
             :in $ ?artist-name
             :where
             [?a :artist/name ?artist-name]]
-          db
+          (db)
           "The Rolling Stones"))))
 
 
