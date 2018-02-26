@@ -30,7 +30,13 @@
       :schema-provider
       :schema
       :QueryRoot
-      :fields)
+      :fields
+      :artists_by_name)
+
+  (-> system
+      :schema-provider
+      :schema
+      :ArtistConnection)
 
   (go)
 

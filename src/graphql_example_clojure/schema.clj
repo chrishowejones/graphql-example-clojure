@@ -4,7 +4,8 @@
             [com.walmartlabs.lacinia.util :as util]
             [graphql-example-clojure.db :as db]
             [datomic.api :as d]
-            [clojure.spec.alpha :as spec]))
+            [clojure.spec.alpha :as spec]
+            [clojure.data.codec.base64 :as b64]))
 
 (defn key-factory
   [key]
@@ -18,13 +19,29 @@
     (let [db (d/db db-conn)]
      (db/entity-by-id db (get value field-key)))))
 
+(defn- base64-encode
+  [x]
+  (let [s (if (string? x) x (str x))]
+    (String. (b64/encode (.getBytes s)))))
+
+(defn- base64-decode
+  [s]
+  (Long/parseLong (apply str (map char (b64/decode (.getBytes s))))))
+
+(defn- build-artist-edges
+  [artist]
+  {:cursor (base64-encode (:db/id artist)) :node artist})
+
 (defn artist-by-name
   [db-conn]
   {:pre [db-conn]}
   (fn [_ args _]
-    (let [{:keys [name first cursor]} args
-          db (d/db db-conn)]
-      (flatten (db/artist-by-name db name first cursor)))))
+    (let [{:keys [name first after]} args
+          db (d/db db-conn)
+          decoded-cursor (when after (base64-decode after))
+          artists (db/artist-by-name db name first decoded-cursor)]
+      {:pageInfo {:hasNextPage (:hasNextPage artists)}
+       :edges (map build-artist-edges (:artists artists))})))
 
 (defn tracks-by-name
   [db-conn]
@@ -124,6 +141,12 @@
                                      [:schema :db])})
 
 (comment
+
+  (String. (b64/encode (.getBytes (str 1234))))
+
+  (base64-decode "MTIzNA==")
+
+  (type (Long/parseLong "123"))
 
 
 

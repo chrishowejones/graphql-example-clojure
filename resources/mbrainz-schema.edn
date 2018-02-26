@@ -147,7 +147,7 @@
 
  :queries
  {:artists_by_name
-  {:type (list :Artist)
+  {:type :ArtistConnection
    :description "Access Artists by their name, if they exist."
    :args
    {:name {:type (non-null String)
@@ -174,7 +174,7 @@
 
  :mutations
  {:add_artist
-  {:type :Artist
+  {:type :ArtistConnection
    :description "Add a new Artist."
    :args
    {:name {:type (non-null String)

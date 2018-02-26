@@ -14,15 +14,22 @@
          (not [?a :db/valueType :db.type/ref])]
        db))
 
+(defn- build-artist-name-query
+  [cursor]
+  (let [q '[:find  (pull ?a [*]) (sort ?a)
+            :in $ ?artist-name
+            :where
+            [?a :artist/name ?artist-name]]]
+    (if cursor
+      (conj q [(list '< cursor '?a)])
+      q)))
+
 (defn artist-by-name
   [db name first cursor]
-  (take first
-        (d/q '[:find  (pull ?a [*])
-           :in $ ?artist-name
-           :where
-           [?a :artist/name ?artist-name]]
-         db
-         name)))
+  (let [query (build-artist-name-query cursor)
+        artists (flatten (d/q query db name))]
+    {:artists (if first (take first artists) artists)
+     :hasNextPage (if first (< first (count artists)) false)}))
 
 (defn tracks-by-name
   [db name]
@@ -187,7 +194,7 @@
           [?e :artist/name "Chris"]]
         (d/db (d/connect uri))))
 
-  (artist-by-name (d/db (d/connect uri)) "Chris" 3 nil)
+  (artist-by-name (d/db (d/connect uri)) "Chris" nil nil)
 
   (d/q '[:find  (pull ?a [*])
          :in $ ?artist-name
@@ -195,5 +202,8 @@
          [?a :artist/name ?artist-name]]
        (d/db (d/connect uri))
        "Chris")
+
+  (build-artist-name-query nil)
+
 
 )

@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [com.datomic/datomic-pro "0.9.5561"]
                  [com.stuartsierra/component "0.3.2"]
-                 [com.walmartlabs/lacinia-pedestal "0.6.0"]]
+                 [com.walmartlabs/lacinia-pedestal "0.6.0"]
+                 [org.clojure/data.codec "0.1.1"]]
   :profiles {:dev {:source-paths ["env/dev"]}}
   :jvm-opts ["-Xmx1g"])
