@@ -32,6 +32,27 @@
     :tracks {:type (list :Track)
              :description "Music tracks for artist."
              :resolve :Artist/tracks}}}
+
+  :PageInfo
+  {:description "Information about page of data."
+   :fields
+   {:hasNextPage {:type (non-null Boolean)}}}
+
+  :ArtistEdge
+  {:description "Edge for Artists."
+   :fields
+   {:cursor {:type (non-null String)
+             :description "Base64 encoded cursor representing this edge."}
+    :node {:type :Artist
+           :description "Artist node."}}}
+
+  :ArtistConnection
+  {:description "A connection to fetch music artists."
+   :fields
+   {:pageInfo {:type (non-null :PageInfo)}
+    :edges {:type (list :ArtistEdge)
+            :description "A list of Artist edges."}}}
+
   :Country
   {:description "Country"
    :fields
@@ -129,7 +150,12 @@
   {:type (list :Artist)
    :description "Access Artists by their name, if they exist."
    :args
-   {:name {:type (non-null String)}}
+   {:name {:type (non-null String)
+           :description "Artist name to search for - exact match, case sensitive"}
+    :first {:type Int
+            :description "Number of Artists from the cursor reference"}
+    :after {:type String
+            :description "Base64 encoded cursor reference from which the artist 'paging' will start."}}
    :resolve :query/artist-by-name}
 
   :tracks_by_name

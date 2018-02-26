@@ -22,9 +22,9 @@
   [db-conn]
   {:pre [db-conn]}
   (fn [_ args _]
-    (let [{:keys [name]} args
+    (let [{:keys [name first cursor]} args
           db (d/db db-conn)]
-      (flatten (db/artist-by-name db name)))))
+      (flatten (db/artist-by-name db name first cursor)))))
 
 (defn tracks-by-name
   [db-conn]

@@ -15,13 +15,14 @@
        db))
 
 (defn artist-by-name
-  [db name]
-  (d/q '[:find  (pull ?a [*])
-         :in $ ?artist-name
-         :where
-         [?a :artist/name ?artist-name]]
-       db
-       name))
+  [db name first cursor]
+  (take first
+        (d/q '[:find  (pull ?a [*])
+           :in $ ?artist-name
+           :where
+           [?a :artist/name ?artist-name]]
+         db
+         name)))
 
 (defn tracks-by-name
   [db name]
@@ -143,6 +144,10 @@
 
 (comment
 
+  (d/q '[:find ?e :where [?e :artist/name "Chris"]] (d/db (d/connect uri)))
+
+  (artist-by-name (d/db (d/connect uri)) "Chris" 3 nil)
+
   @(d/transact (d/connect uri) [{ :artist/name "Chris", :db/id { :part :db.part/user, :idx -1000003 } }])
 
   (add-artist (d/connect uri) {:name "Chris" :startDay 2 :startMonth 4 :startYear 1980})
@@ -182,7 +187,7 @@
           [?e :artist/name "Chris"]]
         (d/db (d/connect uri))))
 
-  (artist-by-name (d/db (d/connect uri)) "Chris")
+  (artist-by-name (d/db (d/connect uri)) "Chris" 3 nil)
 
   (d/q '[:find  (pull ?a [*])
          :in $ ?artist-name
