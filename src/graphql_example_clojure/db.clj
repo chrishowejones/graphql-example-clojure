@@ -16,7 +16,7 @@
 
 (defn artist-by-name
   [db name]
-  (d/q '[:find  (pull ?a [*]) .
+  (d/q '[:find  (pull ?a [*])
          :in $ ?artist-name
          :where
          [?a :artist/name ?artist-name]]

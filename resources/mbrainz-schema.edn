@@ -125,9 +125,9 @@
 
 
  :queries
- {:artist_by_name
-  {:type :Artist
-   :description "Access an Artist by their name, if it exists."
+ {:artists_by_name
+  {:type (list :Artist)
+   :description "Access Artists by their name, if they exist."
    :args
    {:name {:type (non-null String)}}
    :resolve :query/artist-by-name}

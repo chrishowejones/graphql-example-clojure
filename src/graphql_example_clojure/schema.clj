@@ -24,7 +24,7 @@
   (fn [_ args _]
     (let [{:keys [name]} args
           db (d/db db-conn)]
-      (db/artist-by-name db name))))
+      (flatten (db/artist-by-name db name)))))
 
 (defn tracks-by-name
   [db-conn]

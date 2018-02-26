@@ -27,7 +27,10 @@
   (reset)
 
   (-> system
-      :schema-provider)
+      :schema-provider
+      :schema
+      :QueryRoot
+      :fields)
 
   (go)
 
