@@ -99,8 +99,8 @@
          :description "Release medium id"
          :resolve [:key :db/id]}
     :position {:type Int
-              :description "Medium position in Release."
-              :resolve [:key :medium/position]}
+               :description "Medium position in Release."
+               :resolve [:key :medium/position]}
     :trackCount {:type Int
                  :description "Count of tracks on release medium."
                  :resolve [:key :medium/trackCount]}
@@ -144,4 +144,22 @@
    :description "Access a Release by it's name, it it exists."
    :args
    {:name {:type (non-null String)}}
-   :resolve :query/release-by-name}}}
+   :resolve :query/release-by-name}}
+
+ :mutations
+ {:add_artist
+  {:type :Artist
+   :description "Add a new Artist."
+   :args
+   {:name {:type (non-null String)
+           :description "Name of Artist to add"}
+    :startYear {:type Int
+                :description "Year the artist started."
+                :resolve [:key :artist/startYear]}
+    :startMonth {:type Int
+                 :description "Month the artist started."
+                 :resolve [:key :artist/startMonth]}
+    :startDay {:type Int
+               :description "Day the artist started."
+               :resolve [:key :artist/startDay]}}
+   :resolve :mutation/add-artist}}}

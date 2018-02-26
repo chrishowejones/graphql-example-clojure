@@ -3,7 +3,8 @@
             [com.walmartlabs.lacinia.schema :as schema]
             [com.walmartlabs.lacinia.util :as util]
             [graphql-example-clojure.db :as db]
-            [datomic.api :as d]))
+            [datomic.api :as d]
+            [clojure.spec.alpha :as spec]))
 
 (defn key-factory
   [key]
@@ -78,7 +79,12 @@
   {:pre [db-conn]}
   (fn [_ _ format]
     (let [db (d/db db-conn)]
-     (db/release-format db (:db/id format)))))
+      (db/release-format db (:db/id format)))))
+
+(defn add-artist
+  [db-conn]
+  (fn [_ artist _]
+    (db/add-artist db-conn artist)))
 
 (defn resolver-map
   [component]
@@ -91,6 +97,7 @@
      :Release/artists (artists-by-release db-conn)
      :Medium/tracks (tracks-by-medium db-conn)
      :Format/format (resolve-format db-conn)
+     :mutation/add-artist (add-artist db-conn)
      :key key-factory
      :entity (partial entity-factory db-conn)}))
 
@@ -107,7 +114,9 @@
   (start [this]
     (assoc this :schema (load-schema this)))
   (stop [this]
-    (assoc this :schema nil)))
+    (-> this
+        (assoc :schema nil)
+        (assoc :db nil))))
 
 (defn new-schema-provider
   []
@@ -116,14 +125,6 @@
 
 (comment
 
-  (def track1 {:db/id 967570232551699,
-               :track/artists [{:db/id 686095255742708}],
-               :track/artistCredit "The Rolling Stones",
-               :track/position 3,
-               :track/name "Play With Fire",
-               :track/duration 131933})
-
-  ((artists-for-track) nil nil track1)
 
 
   )

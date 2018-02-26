@@ -27,11 +27,7 @@
   (reset)
 
   (-> system
-      :schema-provider
-      :schema
-      :Release
-      :fields
-      :artists)
+      :schema-provider)
 
   (go)
 

@@ -107,13 +107,19 @@
           artist-with-ns))
 
 (defn add-artist
-  [conn db-schema-attrs artist]
+  [conn artist]
   (let [artist-with-ns (add-ns artist "artist")
+        db-schema-attrs (get-schema-attributes (d/db conn))
         artist-attrs (set (filter #(= "artist" (namespace %)) db-schema-attrs))
         valid-artist (build-valid-artist artist-attrs artist-with-ns)
         id-map {:db/id #db/id [:db.part/user]}
-        tx-data (merge valid-artist id-map)]
-   (d/transact conn [tx-data])))
+        tx-data (merge valid-artist id-map)
+        txn @(d/transact conn [tx-data]) ;; transact attrs
+        db-after (:db-after txn)
+        id (-> txn :tempids vals first)]
+    (println "txn = " txn)
+    (d/pull db-after '[*] id) ;; pull transacted entity from db after txn
+    ))
 
 (defrecord Database
     [db-uri]
@@ -137,6 +143,16 @@
 
 (comment
 
+  @(d/transact (d/connect uri) [{ :artist/name "Chris", :db/id { :part :db.part/user, :idx -1000003 } }])
+
+  (add-artist (d/connect uri) {:name "Chris" :startDay 2 :startMonth 4 :startYear 1980})
+
+  (let [id-map {:db/id #db/id [:db.part/user]}
+        artist (merge {:artist/name "Chris"} id-map)]
+    (println artist)
+    @(d/transact (d/connect uri) [artist])
+    )
+
   (let [artist {:artist/name "Chris" :artist/country 1234}
         valid-attrs #{:artist/name :artist/age}]
     (reduce (fn [m [k v]] (if (contains? valid-attrs k) (assoc m k v) m))
@@ -144,9 +160,7 @@
             artist))
 
   (add-artist (d/connect uri)
-              (get-schema-attributes (d/db (d/connect uri)))
-              {:name "Chris" :startYear 1981 :startMonth 4 :startDay 2
-                               :country 17592186045580})
+              {:name "Chris"})
 
   (d/q '[:find (pull ?e [*]) :where [?e :country/name "United Kingdom"]] (d/db (d/connect uri)))
 
@@ -177,49 +191,4 @@
        (d/db (d/connect uri))
        "Chris")
 
-
-
-  (release-by-name "Hot Rocks 1964-1971")
-
-  (format (-> (release-by-name "Hot Rocks 1964-1971")
-              first
-              ;; :release/media
-              ;; first
-              ;; :medium/format
-              ;; :db/id
-              ))
-
-
-  (def track1 {:db/id 967570232551699,
-               :track/artists [{:db/id 686095255742708}],
-               :track/artistCredit "The Rolling Stones",
-               :track/position 3,
-               :track/name "Play With Fire",
-               :track/duration 131933})
-
-  (artists-for-track (:db/id track1))
-
-  (tracks-by-medium (-> (release-by-name "Hot Rocks 1964-1971")
-                        :release/media
-                        first
-                        :db/id))
-
-  (first (releases-by-artist-name "The Rolling Stones"))
-
-  (artists-by-release
-   (:db/id (first (releases-by-artist-name "The Rolling Stones"))))
-
-
-  (tracks-by-name "Prodigal Son")
-
-  (filter #(not= "Official" (:release/status %)) (releases-by-artist-name "The Rolling Stones"))
-
-  (count
-   (tracks-by-artist
-    (:db/id
-     (d/q '[:find (pull ?a [*]) .
-            :in $ ?artist-name
-            :where
-            [?a :artist/name ?artist-name]]
-          (db)
-          "The Rolling Stones")))))
+)
