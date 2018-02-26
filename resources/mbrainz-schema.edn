@@ -174,7 +174,7 @@
 
  :mutations
  {:add_artist
-  {:type :ArtistConnection
+  {:type :Artist
    :description "Add a new Artist."
    :args
    {:name {:type (non-null String)
