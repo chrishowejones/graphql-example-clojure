@@ -101,6 +101,15 @@
            format-id)
       name))
 
+(defn releases-by-artist
+  [db artist-id]
+  (d/q '[:find (pull ?r [*])
+         :in $ $artist-id
+         :where
+         [?r :release/artists ?artist-id]]
+       db
+       artist-id))
+
 (defn- add-ns
   [entity-map ns]
   (->  entity-map
@@ -151,32 +160,19 @@
 
 (comment
 
-  (d/q '[:find ?e :where [?e :artist/name "Chris"]] (d/db (d/connect uri)))
+  (d/q '[:find (pull ?a [:artist/name])
+         :where
+         [?a :artist/name _]]
+       (d/db (d/connect uri)))
 
-  (artist-by-name (d/db (d/connect uri)) "Chris" 3 nil)
-
-  @(d/transact (d/connect uri) [{ :artist/name "Chris", :db/id { :part :db.part/user, :idx -1000003 } }])
-
-  (add-artist (d/connect uri) {:name "Chris" :startDay 2 :startMonth 4 :startYear 1980})
-
-  (let [id-map {:db/id #db/id [:db.part/user]}
-        artist (merge {:artist/name "Chris"} id-map)]
-    (println artist)
-    @(d/transact (d/connect uri) [artist])
-    )
-
-  (let [artist {:artist/name "Chris" :artist/country 1234}
-        valid-attrs #{:artist/name :artist/age}]
-    (reduce (fn [m [k v]] (if (contains? valid-attrs k) (assoc m k v) m))
-            {}
-            artist))
-
-  (add-artist (d/connect uri)
-              {:name "Chris"})
-
-  (d/q '[:find (pull ?e [*]) :where [?e :country/name "United Kingdom"]] (d/db (d/connect uri)))
-
-  (d/q '[:find ?e . :where [?e :db/ident :country/GB]] (d/db (d/connect uri)))
+  (d/q '[:find (pull ?r [*])
+         :where
+         [?r :release/artists ?a]
+         [?a :artist/name "Lou Reed"]
+         [?r :release/media ?m]
+         [?m :medium/tracks ?t]
+         [?t :track/name "Perfect Day"]]
+       (d/db (d/connect uri)))
 
   (d/transact (d/connect uri) (map
                                #(cons :db.fn/retractEntity %)
@@ -186,24 +182,10 @@
                                       [?e :artist/name "Chris"]]
                                     (d/db (d/connect uri)))))
 
-  (map
-   #(cons :db.fn/retractEntity %)
-   (d/q '[:find ?e
-          :in $
-          :where
-          [?e :artist/name "Chris"]]
-        (d/db (d/connect uri))))
-
-  (artist-by-name (d/db (d/connect uri)) "Chris" nil nil)
-
-  (d/q '[:find  (pull ?a [*])
-         :in $ ?artist-name
+  (d/q '[:find (pull ?r [:release/name {:release/country [:country/name]}])
          :where
-         [?a :artist/name ?artist-name]]
-       (d/db (d/connect uri))
-       "Chris")
-
-  (build-artist-name-query nil)
-
+         [?a :artist/name "Lou Reed"]
+         [?r :release/artists ?a]]
+       (d/db (d/connect uri)))
 
 )

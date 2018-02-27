@@ -1,0 +1,51 @@
+# -*- restclient -*-
+
+# Get some tracks by name
+POST http://localhost:8888/graphql
+Content-Type: application/json
+
+{"query": "{tracks_by_name(name: \"Perfect Day\") { name, id, duration }}"}
+
+# Get for schema - names of types
+POST http://localhost:8888/graphql
+Content-Type: application/json
+
+{"query": "{__schema {types {name}}}"}
+
+# Get for schema - get query root
+POST http://localhost:8888/graphql
+Content-Type: application/json
+
+{"query": "{__schema {queryType { name }}}"}
+
+# Get for schema - get queries available
+POST http://localhost:8888/graphql
+Content-Type: application/json
+
+{"query": "{__type(name: \"QueryRoot\") { name, fields {name, type { name, kind }}}}"}
+
+# Get with variable
+POST http://localhost:8888/graphql
+Content-Type: application/json
+
+{"query($name: String!)":
+"{
+  release_by_name(name: $name) {
+    name,
+    id,
+    media {
+      format {
+      	format
+      },
+      tracks {
+        name,
+        duration,
+        artists {
+          name
+        }
+      }
+    }
+  }
+}",
+"variables": {\"name\": \"Chris\"}
+}

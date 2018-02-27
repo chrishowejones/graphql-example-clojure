@@ -91,6 +91,14 @@
           db (d/db db-conn)]
       (db/artists-for-track db track-id))))
 
+(defn releases-by-artist
+  [db-conn]
+  {:pre [db-conn]}
+  (fn [_ _ artist]
+    (let [artist-id (:db/id artist)
+          db (d/db db-conn)]
+      (flatten (db/releases-by-artist db artist-id)))))
+
 (defn resolve-format
   [db-conn]
   {:pre [db-conn]}
@@ -112,6 +120,7 @@
      :Artist/tracks (tracks-by-artist db-conn)
      :Track/artists (artists-for-track db-conn)
      :Release/artists (artists-by-release db-conn)
+     :Artist/releases (releases-by-artist db-conn)
      :Medium/tracks (tracks-by-medium db-conn)
      :Format/format (resolve-format db-conn)
      :mutation/add-artist (add-artist db-conn)
@@ -139,15 +148,3 @@
   []
   {:schema-provider (component/using (map->SchemaProvider {})
                                      [:schema :db])})
-
-(comment
-
-  (String. (b64/encode (.getBytes (str 1234))))
-
-  (base64-decode "MTIzNA==")
-
-  (type (Long/parseLong "123"))
-
-
-
-  )

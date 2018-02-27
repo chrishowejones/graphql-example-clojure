@@ -31,7 +31,10 @@
               :resolve [:entity :artist/country]}
     :tracks {:type (list :Track)
              :description "Music tracks for artist."
-             :resolve :Artist/tracks}}}
+             :resolve :Artist/tracks}
+    :releases {:type (list :Release)
+               :description "List of releases by this artist."
+               :resolve :Artist/releases}}}
 
   :PageInfo
   {:description "Information about page of data."
@@ -108,6 +111,9 @@
     :day {:type Int
           :description "Day of release."
           :resolve [:key :release/day]}
+    :country {:type :Country
+              :description "Country of release"
+              :resolve [:entity :release/country]}
     :media {:type (list :Medium)
             :description "List of media for this Release."
             :resolve [:key :release/media]}

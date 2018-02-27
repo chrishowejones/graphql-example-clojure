@@ -8,5 +8,7 @@
                  [com.stuartsierra/component "0.3.2"]
                  [com.walmartlabs/lacinia-pedestal "0.6.0"]
                  [org.clojure/data.codec "0.1.1"]]
-  :profiles {:dev {:source-paths ["env/dev"]}}
+  :profiles {:dev {:source-paths ["env/dev"]}
+             :uberjar {:main graphql-example-clojure.system
+                       :aot :all}}
   :jvm-opts ["-Xmx1g"])

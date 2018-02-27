@@ -29,13 +29,6 @@
   (-> system
       :schema-provider
       :schema
-      :QueryRoot
-      :fields
-      :artists_by_name)
-
-  (-> system
-      :schema-provider
-      :schema
       :ArtistConnection)
 
   (go)

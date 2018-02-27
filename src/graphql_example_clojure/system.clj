@@ -21,5 +21,5 @@
          (server/new-server)
          (schema/new-schema-provider)))
 
-(defn- main []
-  (new-system))
+(defn -main []
+  (component/start-system (new-system)))
