@@ -9,5 +9,5 @@ pom.xml.asc
 /.nrepl-port
 .hgignore
 .hg/
-.credentials
+/.credentials
 /config/dev-transactor.properties
