@@ -22,4 +22,5 @@
          (schema/new-schema-provider)))
 
 (defn -main []
-  (component/start-system (new-system)))
+  (component/start-system (new-system))
+  (println :started))
